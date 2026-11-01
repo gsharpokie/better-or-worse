@@ -139,7 +139,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);border-top:1px solid va
     <div class="eyebrow">Social trends · United States · By Gwen Sharp · <a href="https://x.com/gsharpokie" target="_blank" rel="noopener">@gsharpokie</a></div>
     <h1><span class="b">Better</span> or <span class="w">worse?</span></h1>
     <p class="lede">Since about 1980, has life in the U.S. gotten better or worse? For each indicator, make your guess. Then see what the data show.</p>
-    <p class="lede sub">“About the same” means a change of less than 5% in either direction. A few indicators start later than 1980 because that’s where the data begin; each card says when. Each answer also shows the change since 2000, because the starting year can change the story.</p>
+    <p class="lede sub">“About the same” means a change of less than 5% in either direction (1% for life expectancy, which moves slowly). A few indicators start later than 1980 because that’s where the data begin; each card says when. Each answer also shows the change since 2000, because the starting year can change the story.</p>
   </header>
 
   <div class="score" id="score">
@@ -246,8 +246,9 @@ const S = {
 
 const DATA = [
   /* ---------------- Health ---------------- */
-  {id: "life", cat: "health", title: "Life expectancy", def: "Average years a newborn can expect to live", unitShort: "Years", suf: " yrs", better: "higher", zero: false,
+  {id: "life", cat: "health", title: "Life expectancy", def: "Average years a newborn can expect to live", unitShort: "Years", suf: " yrs", better: "higher", zero: false, band: 0.01,
     vals: {c1980: {v: 73.7, year: "1980"}, c2000: {v: 76.8, year: "2000"}, latest: {v: 79.0, year: "2024"}},
+    caveat: "Life expectancy changes slowly, so for this card “about the same” means a change of less than 1% (under about one year), not 5%.",
     note: "Americans live about five years longer than in 1980. Life expectancy dipped during the COVID-19 pandemic and has since recovered. A five-year gain sounds small as a percentage, but it adds up to millions of extra years of life.",
     src: [S.db548, S.hus4]},
   {id: "infant", cat: "health", title: "Infant deaths", def: "Deaths before age 1 per 1,000 live births", unitShort: "Per 1,000 births", better: "lower",
@@ -408,7 +409,7 @@ function pts(d){ return ["c1980", "c2000", "latest"].map(k => d.vals[k]).filter(
 function outcome(d){
   const p = pts(d), a = p[0].v, b = p[p.length - 1].v;
   const rel = (b - a) / a;
-  if (Math.abs(rel) < 0.05) return {verdict: "same", rel};
+  if (Math.abs(rel) < (d.band ?? 0.05)) return {verdict: "same", rel};
   const up = rel > 0;
   return {verdict: (d.better === "higher") === up ? "better" : "worse", rel};
 }
@@ -416,7 +417,7 @@ function since2000(d){
   const a = d.vals.c2000, b = d.vals.latest;
   if (!d.vals.c1980 || !a || !b) return "";
   const rel = (b.v - a.v) / a.v;
-  const v = Math.abs(rel) < 0.05 ? "same" : ((d.better === "higher") === (rel > 0) ? "better" : "worse");
+  const v = Math.abs(rel) < (d.band ?? 0.05) ? "same" : ((d.better === "higher") === (rel > 0) ? "better" : "worse");
   return `<div class="s2k">Since ${a.year}: <b class="${v}">${LABEL[v]}</b> (${pctStr(rel)})</div>`;
 }
 function fmt(d, x){
@@ -566,7 +567,7 @@ function onScroll(){ toTop.hidden = window.scrollY < 700; }
 window.addEventListener("scroll", onScroll, {passive: true}); onScroll();
 toTop.addEventListener("click", () => window.scrollTo({top: 0, behavior: reduceMotion() ? "auto" : "smooth"}));
 
-document.getElementById("foot").innerHTML = `Created by Gwen Sharp (<a href="https://x.com/gsharpokie" target="_blank" rel="noopener">@gsharpokie</a>). Data compiled ${AS_OF} from U.S. federal statistical agencies and other primary sources listed on each card. “About the same” means less than a 5% change between the first and last year shown. Licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>.`;
+document.getElementById("foot").innerHTML = `Created by Gwen Sharp (<a href="https://x.com/gsharpokie" target="_blank" rel="noopener">@gsharpokie</a>). Data compiled ${AS_OF} from U.S. federal statistical agencies and other primary sources listed on each card. “About the same” means less than a 5% change between the first and last year shown (1% for life expectancy). Licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>.`;
 build(); score();
 </script>
 
