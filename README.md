@@ -1,6 +1,6 @@
 # Better or Worse?
 
-Since about 1980, has life in the U.S. gotten better or worse? Guess on 26 indicators (health, safety, money and housing, family and school, environment), then see the real trends, your score, and whether your misses leaned pessimistic or optimistic.
+Since about 1980, has life in the U.S. gotten better or worse? Guess on 29 indicators (health, safety, money and housing, family and school, environment), then see the real trends, your score, and whether your misses leaned pessimistic or optimistic.
 
 **Live site:** https://gsharpokie.github.io/better-or-worse/
 

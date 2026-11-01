@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Since 1980, has the U.S. gotten better or worse? Guess on 26 indicators, then check your answers against the data.">
+<meta name="description" content="Since 1980, has the U.S. gotten better or worse? Guess on 29 indicators, then check your answers against the data.">
 <meta name="author" content="Gwen Sharp">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gsharpokie.github.io/better-or-worse/">
 <meta property="og:title" content="Better or Worse?">
-<meta property="og:description" content="Since 1980, has the U.S. gotten better or worse? Guess on 26 indicators, then check your answers against the data.">
+<meta property="og:description" content="Since 1980, has the U.S. gotten better or worse? Guess on 29 indicators, then check your answers against the data.">
 <meta property="og:image" content="https://gsharpokie.github.io/better-or-worse/preview.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:creator" content="@gsharpokie">
 <meta name="twitter:title" content="Better or Worse?">
-<meta name="twitter:description" content="Since 1980, has the U.S. gotten better or worse? Guess on 26 indicators, then check your answers against the data.">
+<meta name="twitter:description" content="Since 1980, has the U.S. gotten better or worse? Guess on 29 indicators, then check your answers against the data.">
 <meta name="twitter:image" content="https://gsharpokie.github.io/better-or-worse/preview.png">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Better or Worse?</title>
@@ -235,6 +235,10 @@ const S = {
   nhtsa24: {name: "NHTSA, Overview of Motor Vehicle Traffic Crashes in 2024", url: "https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/813791"},
   cv24: {name: "BJS, Criminal Victimization, 2024", url: "https://bjs.ojp.gov/document/cv24.pdf"},
   ncvsr: {name: "BJS, Victimization Estimates from the Redesigned NCVS, 2024", url: "https://bjs.ojp.gov/document/verncvsi24.pdf"},
+  hus21: {name: "NCHS, Health, United States 2017, Table 21", url: "https://www.cdc.gov/nchs/data/hus/2017/021.pdf"},
+  wonder: {name: "CDC WONDER mortality databases (our queries)", url: "https://wonder.cdc.gov/"},
+  hus31: {name: "NCHS, Health, United States 2017, Table 31", url: "https://www.cdc.gov/nchs/data/hus/2017/031.pdf"},
+  cdcFirearm: {name: "CDC, Firearm Injury and Death: Fast Facts", url: "https://www.cdc.gov/firearm-violence/data-research/facts-stats/index.html"},
   eia: {name: "EIA, Monthly Energy Review, Table 11.1", url: "https://www.eia.gov/totalenergy/data/browser/csv.php?tbl=T11.01"}
 };
 
@@ -299,6 +303,11 @@ const DATA = [
     note: "The property crime rate has fallen by more than 70% since 1980. Some researchers point to better locks, car security and less cash in people’s pockets; the full causes are debated.",
     caveat: "Same FBI data-collection changes as violent crime. Arson isn’t included.",
     src: [S.fbi99, S.fbi19, S.fbi25]},
+  {id: "kidguns", cat: "safety", title: "Gun deaths of children and teens", def: "Firearm deaths (all intents) of people ages 1–19 per 100,000", unitShort: "Per 100,000", better: "lower",
+    vals: {c1980: {v: 5.5, year: "1980"}, c2000: {v: 4.0, year: "2000"}, latest: {v: 4.9, year: "2024"}},
+    note: "Gun deaths of children and teens fell from 1980 to 2000, then rose, peaking at 6.0 per 100,000 in 2021. They fell in 2024 but remain above the 2000 level. CDC reported that in 2022 firearms were the leading cause of death for children and teens ages 1–19. As other causes like car crashes declined, guns became a larger share of young people’s deaths.",
+    caveat: "Our calculation from CDC WONDER. Includes homicides, suicides, accidents and undetermined intent. Death coding changed from ICD-9 to ICD-10 in 1999.",
+    src: [S.wonder, S.cdcFirearm]},
   {id: "victim", cat: "safety", title: "Violent victimization (survey)", def: "Violent victimizations per 1,000 people 12+, from a national survey that includes crimes not reported to police", unitShort: "Per 1,000", better: "lower",
     vals: {c2000: {v: 79.8, year: "1993"}, latest: {v: 23.3, year: "2024"}},
     note: "This survey asks people directly whether they were victims, so it captures crimes never reported to police. It shows the same big drop as police data: violent victimization fell by about 70% since 1993.",
@@ -343,6 +352,16 @@ const DATA = [
     src: [S.jchs]},
 
   /* ---------------- Family & school ---------------- */
+  {id: "kids14", cat: "family", title: "Deaths of young children", def: "Deaths of children ages 1–4 per 100,000", unitShort: "Per 100,000", better: "lower",
+    vals: {c1980: {v: 63.9, year: "1980"}, c2000: {v: 32.4, year: "2000"}, latest: {v: 25.6, year: "2024"}},
+    note: "The death rate for children ages 1 to 4 has fallen by 60% since 1980. For children 5 to 14, it fell from 30.6 to 14.5 per 100,000. Fewer accidents, better medical care and vaccines all contributed.",
+    caveat: "Death coding changed from ICD-9 to ICD-10 in 1999, and population estimates come from different census bases.",
+    src: [S.hus21, S.db548]},
+  {id: "kidaccident", cat: "family", title: "Children killed in accidents", def: "Deaths from unintentional injuries, children ages 5–14, per 100,000", unitShort: "Per 100,000", better: "lower",
+    vals: {c1980: {v: 15.0, year: "1980"}, c2000: {v: 7.3, year: "2000"}, latest: {v: 3.7, year: "2024"}},
+    note: "Accidental deaths of school-age children fell by about 75%. For children 1 to 4, they fell from 25.9 to 8.4 per 100,000. Traffic deaths of children 14 and under fell from 7.4 to 1.8 per 100,000, and drowning deaths fell from 3.1 to 1.3. Car seats, seat belts, bike helmets, pool fencing and safer products are part of the story. Some people argue today’s parents are too cautious; these numbers are the other side of that debate.",
+    caveat: "Our calculation from CDC WONDER. Death coding changed from ICD-9 to ICD-10 in 1999; the 1980 definition matches the ICD-9 accident categories.",
+    src: [S.wonder]},
   {id: "teenbirth", cat: "family", title: "Teen births", def: "Births per 1,000 females ages 15–19", unitShort: "Per 1,000", better: "lower",
     vals: {c1980: {v: 53.0, year: "1980"}, c2000: {v: 47.7, year: "2000"}, latest: {v: 12.6, year: "2024"}},
     note: "The teen birth rate hit a record low in 2024, down 80% from its 1991 peak (61.8). Researchers credit more use of effective contraception and less teen sexual activity.",
