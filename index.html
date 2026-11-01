@@ -96,6 +96,8 @@ h1 .b{color:var(--better)} h1 .w{color:var(--worse)}
 .spark text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
 .spark .val{fill:var(--ink);font-weight:500;font-size:12px}
 .change{font-size:14px;font-weight:600}
+.s2k{font-size:13px;color:var(--muted)}
+.s2k b.better{color:var(--better)} .s2k b.worse{color:var(--worse)} .s2k b.same{color:var(--ink)}
 .more{align-self:flex-start;border:0;background:none;padding:0;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .more:hover{color:var(--ink)}
 
@@ -137,7 +139,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);border-top:1px solid va
     <div class="eyebrow">Social trends · United States · By Gwen Sharp · <a href="https://x.com/gsharpokie" target="_blank" rel="noopener">@gsharpokie</a></div>
     <h1><span class="b">Better</span> or <span class="w">worse?</span></h1>
     <p class="lede">Since about 1980, has life in the U.S. gotten better or worse? For each indicator, make your guess. Then see what the data show.</p>
-    <p class="lede sub">“About the same” means a change of less than 5% in either direction. A few indicators start later than 1980 because that’s where the data begin; each card says when.</p>
+    <p class="lede sub">“About the same” means a change of less than 5% in either direction. A few indicators start later than 1980 because that’s where the data begin; each card says when. Each answer also shows the change since 2000, because the starting year can change the story.</p>
   </header>
 
   <div class="score" id="score">
@@ -160,7 +162,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);border-top:1px solid va
       <ul>
         <li><strong>Progress isn’t one thing.</strong> Some indicators improved dramatically, some got worse, and some barely moved. “Are things getting better?” depends on which ones you look at.</li>
         <li><strong>Averages hide groups.</strong> A national average can improve while some groups fall behind. Ask who gained, and who didn’t.</li>
-        <li><strong>The starting year shapes the story.</strong> Homicide fell a lot from 1980 but is about where it was in 2000. Pick a different start and you can tell a different story with the same data.</li>
+        <li><strong>The starting year shapes the story.</strong> Homicide fell a lot from 1980 but is slightly higher than in 2000. Pick a different start and you can tell a different story with the same data.</li>
         <li><strong>Better isn’t the same as good.</strong> An indicator can improve and still be a serious problem.</li>
         <li><strong>Measurement changes.</strong> Surveys and definitions change over time. Each card’s details note the breaks that matter.</li>
       </ul>
@@ -290,7 +292,7 @@ const DATA = [
   /* ---------------- Safety ---------------- */
   {id: "homicide", cat: "safety", title: "Homicide", def: "Homicide deaths per 100,000 people, age-adjusted", unitShort: "Per 100,000", better: "lower",
     vals: {c1980: {v: 10.4, year: "1980"}, c2000: {v: 5.9, year: "2000"}, latest: {v: 6.2, year: "2024"}},
-    note: "The homicide rate is down about 40% from 1980. Most of that drop happened in the 1990s. Compared with 2000, it’s about the same, which shows how much the starting year matters. The FBI’s count for 2025 shows murder falling further, to its lowest rate since the 1950s.",
+    note: "The homicide rate is down about 40% from 1980. Most of that drop happened in the 1990s. Compared with 2000, it’s slightly higher (up 5%), which shows how much the starting year matters. The FBI’s count for 2025 shows murder falling further, to its lowest rate since the 1950s.",
     caveat: "Death coding changed from ICD-9 to ICD-10 in 1999.",
     src: [S.slct, S.vsrr]},
 {id: "violent", cat: "safety", title: "Violent crime reported to police", def: "Violent crimes known to police per 100,000 people (FBI estimates)", unitShort: "Per 100,000", dp: 1, better: "lower",
@@ -410,6 +412,13 @@ function outcome(d){
   const up = rel > 0;
   return {verdict: (d.better === "higher") === up ? "better" : "worse", rel};
 }
+function since2000(d){
+  const a = d.vals.c2000, b = d.vals.latest;
+  if (!d.vals.c1980 || !a || !b) return "";
+  const rel = (b.v - a.v) / a.v;
+  const v = Math.abs(rel) < 0.05 ? "same" : ((d.better === "higher") === (rel > 0) ? "better" : "worse");
+  return `<div class="s2k">Since ${a.year}: <b class="${v}">${LABEL[v]}</b> (${pctStr(rel)})</div>`;
+}
 function fmt(d, x){
   const dp = d.dp ?? 1;
   return (d.pre || "") + x.toLocaleString("en-US", {minimumFractionDigits: dp, maximumFractionDigits: dp}) + (d.suf || "");
@@ -469,6 +478,7 @@ function renderCard(d){
   const yours = g === "reveal" ? "" : right ? `You said <b>${LABEL[g]}</b> ✓` : `You said <b>${LABEL[g]}</b>`;
   c.querySelector(".result").innerHTML = `
     <div class="verdict"><span class="chip ${o.verdict}">${LABEL[o.verdict]}</span><span class="yours">${yours}</span></div>
+    ${since2000(d)}
     ${spark(d, o.verdict)}
     <div class="change">${d.change ? d.change(p[0], p[p.length - 1], o.rel) : `${fmt(d, p[0].v)} in ${p[0].year} → ${fmt(d, p[p.length - 1].v)} in ${p[p.length - 1].year} (${pctStr(o.rel)})`}</div>
     <button type="button" class="more">What’s behind it ›</button>`;
@@ -521,6 +531,7 @@ function openDrawer(id, from){
     <div class="dtop"><span class="lab">${cat.name}</span><button type="button" class="close">Close ✕</button></div>
     <h3 id="dTitle">${d.title}</h3>
     <div class="verdict"><span class="chip ${o.verdict}">${LABEL[o.verdict]}</span><span class="yours">${pctStr(o.rel)} since ${p[0].year}</span></div>
+    ${since2000(d)}
     <h4>The numbers</h4>
     <table><thead><tr><th>Year</th><th>${d.unitShort || "Value"}</th></tr></thead><tbody>${p.map(q => `<tr><td>${q.year}</td><td>${fmt(d, q.v)}</td></tr>`).join("")}</tbody></table>
     <p class="caveat" style="margin-top:6px">${d.def}</p>
