@@ -17,7 +17,10 @@
 <meta name="twitter:title" content="Better or Worse?">
 <meta name="twitter:description" content="Since 1980, has the U.S. gotten better or worse? Guess on 29 indicators, then check your answers against the data.">
 <meta name="twitter:image" content="https://gsharpokie.github.io/better-or-worse/preview.png">
-<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+/* Main landmark for screen readers; keeps the same spacing as before. */
+.wrap-main { display: block; }
+</style>
 <title>Better or Worse?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -141,6 +144,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);border-top:1px solid va
     <p class="lede">Since about 1980, has life in the U.S. gotten better or worse? For each indicator, make your guess. Then see what the data show.</p>
     <p class="lede sub">“About the same” means a change of less than 5% in either direction (1% for life expectancy, which moves slowly). A few indicators start later than 1980 because that’s where the data begin; each card says when. Each answer also shows the change since 2000, because the starting year can change the story.</p>
   </header>
+  <main class="wrap-main">
 
   <div class="score" id="score">
     <div class="srow">
@@ -185,6 +189,7 @@ footer{margin-top:40px;font-size:13px;color:var(--muted);border-top:1px solid va
     </div>
   </section>
 
+  </main>
   <footer id="foot"></footer>
 </div>
 
